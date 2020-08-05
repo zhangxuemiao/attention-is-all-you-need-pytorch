@@ -4,7 +4,6 @@ import torch.nn as nn
 import numpy as np
 from transformer.Layers import EncoderLayer, DecoderLayer
 
-
 __author__ = "Yu-Hsiang Huang"
 
 
@@ -30,6 +29,7 @@ class PositionalEncoding(nn.Module):
 
     def _get_sinusoid_encoding_table(self, n_position, d_hid):
         ''' Sinusoid position encoding table '''
+
         # TODO: make it with torch instead of numpy
 
         def get_position_angle_vec(position):
@@ -67,7 +67,7 @@ class Encoder(nn.Module):
         enc_slf_attn_list = []
 
         # -- Forward
-        
+
         enc_output = self.dropout(self.position_enc(self.src_word_emb(src_seq)))
         enc_output = self.layer_norm(enc_output)
 
@@ -117,7 +117,7 @@ class Decoder(nn.Module):
 
 
 class Transformer(nn.Module):
-    ''' A sequence to sequence model with attention mechanism. '''
+    """ A sequence to sequence model with attention mechanism. """
 
     def __init__(
             self, n_src_vocab, n_trg_vocab, src_pad_idx, trg_pad_idx,
@@ -145,11 +145,10 @@ class Transformer(nn.Module):
 
         for p in self.parameters():
             if p.dim() > 1:
-                nn.init.xavier_uniform_(p) 
+                nn.init.xavier_uniform_(p)
 
         assert d_model == d_word_vec, \
-        'To facilitate the residual connections, \
-         the dimensions of all module outputs shall be the same.'
+            'To facilitate the residual connections, the dimensions of all module outputs shall be the same.'
 
         self.x_logit_scale = 1.
         if trg_emb_prj_weight_sharing:
@@ -159,7 +158,6 @@ class Transformer(nn.Module):
 
         if emb_src_trg_weight_sharing:
             self.encoder.src_word_emb.weight = self.decoder.trg_word_emb.weight
-
 
     def forward(self, src_seq, trg_seq):
 

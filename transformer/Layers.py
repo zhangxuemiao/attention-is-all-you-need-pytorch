@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch
 from transformer.SubLayers import MultiHeadAttention, PositionwiseFeedForward
 
-
 __author__ = "Yu-Hsiang Huang"
 
 

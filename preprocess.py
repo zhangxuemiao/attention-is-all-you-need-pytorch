@@ -17,22 +17,19 @@ import transformer.Constants as Constants
 from learn_bpe import learn_bpe
 from apply_bpe import BPE
 
-
 __author__ = "Yu-Hsiang Huang"
 
-
 _TRAIN_DATA_SOURCES = [
-    {"url": "http://data.statmt.org/wmt17/translation-task/" \
-             "training-parallel-nc-v12.tgz",
+    {"url": "http://data.statmt.org/wmt17/translation-task/training-parallel-nc-v12.tgz",
      "trg": "news-commentary-v12.de-en.en",
      "src": "news-commentary-v12.de-en.de"},
-    #{"url": "http://www.statmt.org/wmt13/training-parallel-commoncrawl.tgz",
+    # {"url": "http://www.statmt.org/wmt13/training-parallel-commoncrawl.tgz",
     # "trg": "commoncrawl.de-en.en",
     # "src": "commoncrawl.de-en.de"},
-    #{"url": "http://www.statmt.org/wmt13/training-parallel-europarl-v7.tgz",
+    # {"url": "http://www.statmt.org/wmt13/training-parallel-europarl-v7.tgz",
     # "trg": "europarl-v7.de-en.en",
     # "src": "europarl-v7.de-en.de"}
-    ]
+]
 
 _VAL_DATA_SOURCES = [
     {"url": "http://data.statmt.org/wmt17/translation-task/dev.tgz",
@@ -40,8 +37,7 @@ _VAL_DATA_SOURCES = [
      "src": "newstest2013.de"}]
 
 _TEST_DATA_SOURCES = [
-    {"url": "https://storage.googleapis.com/tf-perf-public/" \
-                "official_transformer/test_data/newstest2014.tgz",
+    {"url": "https://storage.googleapis.com/tf-perf-public/official_transformer/test_data/newstest2014.tgz",
      "trg": "newstest2014.en",
      "src": "newstest2014.de"}]
 
@@ -95,7 +91,7 @@ def _download_file(download_dir, url):
 
 
 def get_raw_files(raw_dir, sources):
-    raw_files = { "src": [], "trg": [], }
+    raw_files = {"src": [], "trg": [], }
     for d in sources:
         src_file, trg_file = download_and_extract(raw_dir, d["url"], d["src"], d["trg"])
         raw_files["src"].append(src_file)
@@ -120,9 +116,9 @@ def compile_files(raw_dir, raw_files, prefix):
 
     with open(src_fpath, 'w') as src_outf, open(trg_fpath, 'w') as trg_outf:
         for src_inf, trg_inf in zip(raw_files['src'], raw_files['trg']):
-            sys.stderr.write(f'  Input files: \n'\
-                    f'    - SRC: {src_inf}, and\n' \
-                    f'    - TRG: {trg_inf}.\n')
+            sys.stderr.write(f'  Input files: \n' \
+                                 f'    - SRC: {src_inf}, and\n' \
+                                 f'    - TRG: {trg_inf}.\n')
             with open(src_inf, newline='\n') as src_inf, open(trg_inf, newline='\n') as trg_inf:
                 cntr = 0
                 for i, line in enumerate(src_inf):
@@ -136,9 +132,9 @@ def compile_files(raw_dir, raw_files, prefix):
 
 
 def encode_file(bpe, in_file, out_file):
-    sys.stderr.write(f"Read raw content from {in_file} and \n"\
-            f"Write encoded content to {out_file}\n")
-    
+    sys.stderr.write(f"Read raw content from {in_file} and \n" \
+                         f"Write encoded content to {out_file}\n")
+
     with codecs.open(in_file, encoding='utf-8') as in_f:
         with codecs.open(out_file, 'w', encoding='utf-8') as out_f:
             for line in in_f:
@@ -170,7 +166,7 @@ def main():
         '--min-frequency', type=int, default=6, metavar='FREQ',
         help='Stop if no symbol pair has frequency >= FREQ (default: %(default)s))')
     parser.add_argument('--dict-input', action="store_true",
-        help="If set, input file is interpreted as a dictionary where each line contains a word-count pair")
+                        help="If set, input file is interpreted as a dictionary where each line contains a word-count pair")
     parser.add_argument(
         '--separator', type=str, default='@@', metavar='STR',
         help="Separator between non-final subword units (default: '%(default)s'))")
@@ -199,7 +195,7 @@ def main():
     sys.stderr.write(f"BPE codes prepared.\n")
 
     sys.stderr.write(f"Build up the tokenizer.\n")
-    with codecs.open(opt.codes, encoding='utf-8') as codes: 
+    with codecs.open(opt.codes, encoding='utf-8') as codes:
         bpe = BPE(codes, separator=opt.separator)
 
     sys.stderr.write(f"Encoding ...\n")
@@ -207,7 +203,6 @@ def main():
     encode_files(bpe, val_src, val_trg, opt.data_dir, opt.prefix + '-val')
     encode_files(bpe, test_src, test_trg, opt.data_dir, opt.prefix + '-test')
     sys.stderr.write(f"Done.\n")
-
 
     field = torchtext.data.Field(
         tokenize=str.split,
@@ -233,12 +228,11 @@ def main():
     from itertools import chain
     field.build_vocab(chain(train.src, train.trg), min_freq=2)
 
-    data = { 'settings': opt, 'vocab': field, }
+    data = {'settings': opt, 'vocab': field, }
     opt.save_data = os.path.join(opt.data_dir, opt.save_data)
 
     print('[Info] Dumping the processed data to pickle file', opt.save_data)
     pickle.dump(data, open(opt.save_data, 'wb'))
-
 
 
 def main_wo_bpe():
@@ -259,8 +253,8 @@ def main_wo_bpe():
     parser.add_argument('-min_word_count', type=int, default=3)
     parser.add_argument('-keep_case', action='store_true')
     parser.add_argument('-share_vocab', action='store_true')
-    #parser.add_argument('-ratio', '--train_valid_test_ratio', type=int, nargs=3, metavar=(8,1,1))
-    #parser.add_argument('-vocab', default=None)
+    # parser.add_argument('-ratio', '--train_valid_test_ratio', type=int, nargs=3, metavar=(8,1,1))
+    # parser.add_argument('-vocab', default=None)
 
     opt = parser.parse_args()
     assert not any([opt.data_src, opt.data_trg]), 'Custom data input is not support now.'
@@ -297,9 +291,9 @@ def main_wo_bpe():
         return len(vars(x)['src']) <= MAX_LEN and len(vars(x)['trg']) <= MAX_LEN
 
     train, val, test = torchtext.datasets.Multi30k.splits(
-            exts = ('.' + opt.lang_src, '.' + opt.lang_trg),
-            fields = (SRC, TRG),
-            filter_pred=filter_examples_with_length)
+        exts=('.' + opt.lang_src, '.' + opt.lang_trg),
+        fields=(SRC, TRG),
+        filter_pred=filter_examples_with_length)
 
     SRC.build_vocab(train.src, min_freq=MIN_FREQ)
     print('[Info] Get source language vocabulary size:', len(SRC.vocab))
@@ -319,7 +313,6 @@ def main_wo_bpe():
         SRC.vocab.itos = TRG.vocab.itos
         print('[Info] Get merged vocabulary size:', len(TRG.vocab))
 
-
     data = {
         'settings': opt,
         'vocab': {'src': SRC, 'trg': TRG},
@@ -333,4 +326,4 @@ def main_wo_bpe():
 
 if __name__ == '__main__':
     main_wo_bpe()
-    #main()
+    # main()
